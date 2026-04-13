@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>NotesApp</title>
+  </head>
+  <body>
+    <div class="main-container">
+      <nav>
+        <h2>Notes App</h2>
+      </nav>
+      <form id="main-form">
+        <label for="title">Title:</label>
+        <input type="text" id="title" placeholder="e.g: Cooking prep" />
+        <label for="content">Content:</label>
+        <textarea name="" id="content"></textarea>
+        <button id="add-btn">Add</button>
+      </form>
+      <hr />
+      <div class="notes-list">
+        <div class="notes-div">
+          <div class="info-display">
+            <p class="title-display">Title</p>
+            <p class="content-display">This is a sample of display</p>
+          </div>
+          <div class="edit-manager">
+            <button class="delete-btn">Delete</button>
+            <button class="edit-btn">Edit</button>
+          </div>
+        </div>
+        <hr />
+        <div class="notes-div">
+          <div class="info-display">
+            <p class="title-display">Title</p>
+            <p class="content-display">This is a sample of display</p>
+          </div>
+          <div class="edit-manager">
+            <button class="delete-btn">Delete</button>
+            <button class="edit-btn">Edit</button>
+          </div>
+        </div>
+        <hr />
+      </div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>

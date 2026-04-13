@@ -1,0 +1,99 @@
+@import url("https://fonts.googleapis.com/css2?family=Happy+Monkey&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+button {
+  background-color: #1b1b1b;
+  color: white;
+  border-radius: 3px;
+  border: none;
+}
+
+nav {
+  display: flex;
+  height: 70px;
+  align-items: center;
+  background-color: #1b1b1b;
+  color: #fff;
+}
+
+nav > h2 {
+  font-size: 2rem;
+  font-weight: 200;
+  margin-left: 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5rem;
+}
+
+form > label {
+  font-size: 1.2rem;
+  margin-bottom: 0.7rem;
+  margin-top: 0.5rem;
+}
+
+form > input {
+  width: 70%;
+  padding: 0.5rem 0.7rem;
+  border-radius: 3px;
+  border: 1px solid #1b1b1b;
+}
+
+form > textarea {
+  width: 70%;
+  height: 60px;
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid #1b1b1b;
+}
+
+form > button {
+  width: 70px;
+  padding: 0.5rem 0.7rem;
+  margin-top: 1rem;
+  font-family: "Poppins", sans-serif;
+  margin-bottom: 1rem;
+}
+
+.notes-list {
+  padding: 0.7rem 0.5rem;
+}
+
+.notes-div {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: 7px;
+  margin-bottom: 5px;
+}
+.info-display > .title-display {
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+.info-display > .content-display {
+  font-family: "Happy Monkey", sans-serif;
+  font-weight: 500;
+}
+
+.notes-div > .edit-manager {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.edit-manager > button {
+  font-family: "Poppins", sans-serif;
+  padding: 5px 7px;
+  margin-bottom: 5px;
+}
