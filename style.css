@@ -66,7 +66,17 @@ form > button {
   margin-bottom: 1rem;
 }
 
-.notes-list {
+#count-display {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+  text-decoration: underline;
+}
+
+#notes-list {
   padding: 0.7rem 0.5rem;
 }
 
@@ -77,10 +87,13 @@ form > button {
   margin-top: 7px;
   margin-bottom: 5px;
 }
+
 .info-display > .title-display {
   font-size: 1.3rem;
   font-weight: 500;
+  text-decoration: underline;
 }
+
 .info-display > .content-display {
   font-family: "Happy Monkey", sans-serif;
   font-weight: 500;
@@ -89,11 +102,20 @@ form > button {
 .notes-div > .edit-manager {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  margin-left: 20px;
 }
 
-.edit-manager > button {
+.edit-manager > button, .edit-buttons > button {
   font-family: "Poppins", sans-serif;
   padding: 5px 7px;
   margin-bottom: 5px;
 }
+
+.edit-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
