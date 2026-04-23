@@ -1,4 +1,5 @@
 let notesArray = [];
+let searchItem = "";
 
 //localStorage.clear()
 
@@ -12,6 +13,7 @@ if (savedNotes) {
 const title = document.getElementById("title");
 const content = document.getElementById("content");
 const mainForm = document.getElementById("main-form");
+const search = document.getElementById("search");
 
 mainForm.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -20,15 +22,18 @@ mainForm.addEventListener("submit", (e) => {
 
   addToNotes(validatedData);
   renderNotes();
-  console.log("works");
-
   mainForm.reset();
+});
+
+search.addEventListener("input", (e) => {
+  searchItem = e.target.value.trim();
+  renderNotes();
 });
 
 function addToNotes(value) {
   notesArray.push({
-    title: value.titleValue,
-    content: value.contentValue,
+    title: value.title,
+    content: value.content,
     isEditing: false,
   });
   saveToNotes();
@@ -48,7 +53,7 @@ function validateInput() {
     return null;
   }
 
-  return { titleValue: validTitle, contentValue: validContent };
+  return { title: validTitle, content: validContent };
 }
 
 function validateEditInput(editTitle, editContent) {
@@ -65,7 +70,7 @@ function validateEditInput(editTitle, editContent) {
     return null;
   }
 
-  return { titleEditValue: validEditTitle, contentEditValue: validEditContent };
+  return { title: validEditTitle, content: validEditContent };
 }
 
 function saveToNotes() {
@@ -74,17 +79,36 @@ function saveToNotes() {
 
 function renderNotes() {
   const notesList = document.getElementById("notes-list");
+  const countDisplay = document.getElementById("count-display");
+
   notesList.innerHTML = "";
 
-  for (let i = 0; i < notesArray.length; i++) {
+  const filteredNotes = notesArray.filter((item) => {
+    const lowercaseTitle = item.title.toLowerCase();
+    const lowercaseContent = item.content.toLowerCase();
+    const lowercaseSearchterm = searchItem.toLowerCase();
+
+    return (
+      lowercaseTitle.includes(lowercaseSearchterm) ||
+      lowercaseContent.includes(lowercaseSearchterm)
+    );
+  });
+
+  if (searchItem.length !== 0 && filteredNotes.length === 0) {
+    countDisplay.innerHTML = `No match for ${searchItem}`;
+    return
+  }
+
+  for (let i = 0; i < filteredNotes.length; i++) {
+    const note = filteredNotes[i];
     const notesDiv = document.createElement("div");
     const lineBreak = document.createElement("hr");
-    if (!notesArray[i].isEditing) {
+    if (!note.isEditing) {
       notesDiv.classList.add("notes-div");
       notesDiv.innerHTML = `
       <div class="info-display">
-            <p class="title-display">${notesArray[i].title}</p>
-            <p class="content-display">${notesArray[i].content}</p>
+            <p class="title-display">${note.title}</p>
+            <p class="content-display">${note.content}</p>
           </div>
           <div class="edit-manager">
             <button class="delete-btn">Delete</button>
@@ -95,7 +119,8 @@ function renderNotes() {
       const deleteBtn = notesDiv.querySelector(".delete-btn");
       deleteBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        notesArray.splice(i, 1);
+        const index = notesArray.indexOf(note);
+        notesArray.splice(index, 1);
         saveToNotes();
         renderNotes();
       });
@@ -103,18 +128,18 @@ function renderNotes() {
       const editBtn = notesDiv.querySelector(".edit-btn");
       editBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        notesArray[i].isEditing = true;
+        note.isEditing = true;
         renderNotes();
       });
     } else {
       notesDiv.innerHTML = `
       <form class="edit-form">
         <label for="title">Title:</label>
-        <input type="text" class="edit-title" value="${notesArray[i].title}" />
+        <input type="text" class="edit-title" value="${note.title}" />
         <label for="content">Content:</label>
-        <textarea class="edit-content">${notesArray[i].content}</textarea>
+        <textarea class="edit-content">${note.content}</textarea>
         <div class="edit-buttons">
-         <button type="submit">Add</button>
+         <button type="submit">Save</button>
          <button type="button" class="cancel-btn">Cancel</button>
         </div>
       </form>
@@ -132,16 +157,16 @@ function renderNotes() {
         const validatedEditData = validateEditInput(editedTitle, editedContent);
         if (!validatedEditData) return;
 
-        notesArray[i].title = validatedEditData.titleEditValue;
-        notesArray[i].content = validatedEditData.contentEditValue;
-        notesArray[i].isEditing = false;
+        note.title = validatedEditData.title;
+        note.content = validatedEditData.content;
+        note.isEditing = false;
         saveToNotes();
         renderNotes();
       });
 
       cancelBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        notesArray[i].isEditing = false;
+        note.isEditing = false;
         saveToNotes();
         renderNotes();
       });
@@ -150,6 +175,9 @@ function renderNotes() {
     notesList.appendChild(lineBreak);
   }
 
-  const countDisplay = document.getElementById("count-display");
-  countDisplay.innerText = `You have ${notesArray.length} Note${notesArray.length === 1 ? "" : "s"}`;
+  countDisplay.innerHTML = `${
+    notesArray.length === 0
+      ? "No notes yet. Start writing ✨"
+      : `Showing ${filteredNotes.length} of ${notesArray.length} Note${notesArray.length === 1 ? "" : "s"}`
+  }`;
 }

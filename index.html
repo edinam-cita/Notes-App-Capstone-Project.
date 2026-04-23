@@ -10,16 +10,18 @@
     <div class="main-container">
       <nav>
         <h2>Notes App</h2>
+        <input id="search" type="text" placeholder="Search a term here">
       </nav>
       <form id="main-form">
         <label for="title">Title:</label>
         <input type="text" id="title" placeholder="e.g: Cooking prep" />
         <label for="content">Content:</label>
-        <textarea name="" id="content"></textarea>
+        <textarea name="" id="content" placeholder="Describe your activity here...
+        "></textarea>
         <button id="add-btn">Add</button>
       </form>
       <hr />
-      <div><p id="count-display">You have 0 Notes</p></div>
+      <div><p id="count-display">No notes yet. Start writing ✨</p></div>
       <div id="notes-list"></div>
     </div>
     <script src="main.js"></script>
