@@ -35,6 +35,7 @@ function addToNotes(value) {
     title: value.title,
     content: value.content,
     isEditing: false,
+    createdAt: Date.now(),
   });
   saveToNotes();
 }
@@ -77,6 +78,42 @@ function saveToNotes() {
   localStorage.setItem("notes", JSON.stringify(notesArray));
 }
 
+function formatRelativeTime(timestamp) {
+  const diff = Date.now() - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (minutes < 1) {
+    return "Just now";
+  } else if (minutes < 60) {
+    return `${minutes} min${minutes === 1 ? "" : "s"}`;
+  } else if (hours < 24) {
+    return `${hours} hr${hours === 1 ? "" : "s"}`;
+  } else {
+    return `${days} day${days === 1 ? "" : "s"}`;
+  }
+}
+
+function highlightText(text, searchTerm) {
+  if (!searchTerm) return text;
+
+  const lowerText = text.toLowerCase();
+  const lowerSearch = searchTerm.toLowerCase();
+
+  const startIndex = lowerText.indexOf(lowerSearch);
+
+  if (startIndex === -1) return text;
+
+  const endIndex = startIndex + lowerSearch.length;
+
+  const before = text.slice(0, startIndex);
+  const match = text.slice(startIndex, endIndex);
+  const after = text.slice(endIndex);
+
+  return `${before}<mark>${match}</mark>${after}`;
+}
+
 function renderNotes() {
   const notesList = document.getElementById("notes-list");
   const countDisplay = document.getElementById("count-display");
@@ -95,8 +132,8 @@ function renderNotes() {
   });
 
   if (searchItem.length !== 0 && filteredNotes.length === 0) {
-    countDisplay.innerHTML = `No match for ${searchItem}`;
-    return
+    countDisplay.innerHTML = `No match for "${searchItem}"`;
+    return;
   }
 
   for (let i = 0; i < filteredNotes.length; i++) {
@@ -107,8 +144,9 @@ function renderNotes() {
       notesDiv.classList.add("notes-div");
       notesDiv.innerHTML = `
       <div class="info-display">
-            <p class="title-display">${note.title}</p>
-            <p class="content-display">${note.content}</p>
+            <p class="title-display">${highlightText(note.title, searchItem)}</p>
+            <p class="content-display">${highlightText(note.content, searchItem)}</p>
+            <p class="time-display">${formatRelativeTime(note.createdAt)}</p>
           </div>
           <div class="edit-manager">
             <button class="delete-btn">Delete</button>
