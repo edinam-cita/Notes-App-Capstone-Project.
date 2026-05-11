@@ -3,11 +3,15 @@ let searchItem = "";
 
 //localStorage.clear()
 
-const savedNotes = JSON.parse(localStorage.getItem("notes"));
+function init() {
+  const savedNotes = JSON.parse(localStorage.getItem("notes"));
 
-if (savedNotes) {
-  notesArray = savedNotes;
+  if (savedNotes) {
+    notesArray = savedNotes;
+  }
+
   renderNotes();
+  setUpEventListeners();
 }
 
 const title = document.getElementById("title");
@@ -114,6 +118,31 @@ function highlightText(text, searchTerm) {
   return `${before}<mark>${match}</mark>${after}`;
 }
 
+function setUpEventListeners() {
+  const notesList = document.getElementById("notes-list");
+
+  notesList.addEventListener("click", (e) => {
+    const targetIndex = Number(e.target.dataset.index);
+
+    if (e.target.classList.contains("delete-btn")) {
+      notesArray.splice(targetIndex, 1);
+      saveToNotes();
+      renderNotes();
+    }
+
+    if (e.target.classList.contains("edit-btn")) {
+      notesArray[targetIndex].isEditing = true;
+      renderNotes();
+    }
+
+    if (e.target.classList.contains("cancel-btn")) {
+      notesArray[targetIndex].isEditing = false;
+      saveToNotes();
+      renderNotes();
+    }
+  });
+}
+
 function renderNotes() {
   const notesList = document.getElementById("notes-list");
   const countDisplay = document.getElementById("count-display");
@@ -149,26 +178,10 @@ function renderNotes() {
             <p class="time-display">${formatRelativeTime(note.createdAt)}</p>
           </div>
           <div class="edit-manager">
-            <button class="delete-btn">Delete</button>
-            <button class="edit-btn">Edit</button>
+            <button data-index=${notesArray.indexOf(note)} class="delete-btn">Delete</button>
+            <button data-index=${notesArray.indexOf(note)} class="edit-btn">Edit</button>
           </div>
       `;
-
-      const deleteBtn = notesDiv.querySelector(".delete-btn");
-      deleteBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const index = notesArray.indexOf(note);
-        notesArray.splice(index, 1);
-        saveToNotes();
-        renderNotes();
-      });
-
-      const editBtn = notesDiv.querySelector(".edit-btn");
-      editBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        note.isEditing = true;
-        renderNotes();
-      });
     } else {
       notesDiv.innerHTML = `
       <form class="edit-form">
@@ -177,8 +190,8 @@ function renderNotes() {
         <label for="content">Content:</label>
         <textarea class="edit-content">${note.content}</textarea>
         <div class="edit-buttons">
-         <button type="submit">Save</button>
-         <button type="button" class="cancel-btn">Cancel</button>
+         <button data-index=${notesArray.indexOf(note)} type="submit">Save</button>
+         <button data-index=${notesArray.indexOf(note)} type="button" class="cancel-btn">Cancel</button>
         </div>
       </form>
       `;
@@ -186,8 +199,6 @@ function renderNotes() {
       const editForm = notesDiv.querySelector(".edit-form");
       const editedTitle = editForm.querySelector(".edit-title");
       const editedContent = editForm.querySelector(".edit-content");
-
-      const cancelBtn = editForm.querySelector(".cancel-btn");
 
       editForm.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -197,13 +208,6 @@ function renderNotes() {
 
         note.title = validatedEditData.title;
         note.content = validatedEditData.content;
-        note.isEditing = false;
-        saveToNotes();
-        renderNotes();
-      });
-
-      cancelBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
         note.isEditing = false;
         saveToNotes();
         renderNotes();
@@ -219,3 +223,5 @@ function renderNotes() {
       : `Showing ${filteredNotes.length} of ${notesArray.length} Note${notesArray.length === 1 ? "" : "s"}`
   }`;
 }
+
+init();
