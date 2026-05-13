@@ -36,6 +36,7 @@ search.addEventListener("input", (e) => {
 
 function addToNotes(value) {
   notesArray.push({
+    id: crypto.randomUUID(),
     title: value.title,
     content: value.content,
     isEditing: false,
@@ -122,25 +123,72 @@ function setUpEventListeners() {
   const notesList = document.getElementById("notes-list");
 
   notesList.addEventListener("click", (e) => {
-    const targetIndex = Number(e.target.dataset.index);
+    const id = e.target.dataset.id;
+
+    if (!id) return;
+
+    const note = notesArray.find((n) => n.id === id);
+
+    if (!note) return;
 
     if (e.target.classList.contains("delete-btn")) {
-      notesArray.splice(targetIndex, 1);
+      notesArray = notesArray.filter((n) => n.id !== id);
       saveToNotes();
       renderNotes();
     }
 
     if (e.target.classList.contains("edit-btn")) {
-      notesArray[targetIndex].isEditing = true;
+      note.isEditing = true;
       renderNotes();
     }
 
     if (e.target.classList.contains("cancel-btn")) {
-      notesArray[targetIndex].isEditing = false;
+      note.isEditing = false;
       saveToNotes();
       renderNotes();
     }
   });
+}
+
+function createNoteHTML(note) {
+  return `
+      <div class="info-display">
+            <p class="title-display">${highlightText(note.title, searchItem)}</p>
+            <p class="content-display">${highlightText(note.content, searchItem)}</p>
+            <p class="time-display">${formatRelativeTime(note.createdAt)}</p>
+          </div>
+          <div class="edit-manager">
+            <button data-id=${note.id} class="delete-btn">Delete</button>
+            <button data-id=${note.id} class="edit-btn">Edit</button>
+          </div>
+      `;
+}
+
+function createEditHTML(note) {
+  return `
+      <form class="edit-form">
+        <label for="title">Title:</label>
+        <input type="text" class="edit-title" value="${note.title}" />
+        <label for="content">Content:</label>
+        <textarea class="edit-content">${note.content}</textarea>
+        <div class="edit-buttons">
+         <button data-id=${note.id} type="submit">Save</button>
+         <button data-id=${note.id} type="button" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+      `;
+}
+
+function handleEditLogic(id, inputTitle, inputContent) {
+  const note = notesArray.find((n) => n.id === id);
+  const validated = validateEditInput(inputTitle, inputContent);
+  if (!validated) return;
+
+  note.title = validated.title;
+  note.content = validated.content;
+  note.isEditing = false;
+  saveToNotes();
+  renderNotes();
 }
 
 function renderNotes() {
@@ -171,30 +219,9 @@ function renderNotes() {
     const lineBreak = document.createElement("hr");
     if (!note.isEditing) {
       notesDiv.classList.add("notes-div");
-      notesDiv.innerHTML = `
-      <div class="info-display">
-            <p class="title-display">${highlightText(note.title, searchItem)}</p>
-            <p class="content-display">${highlightText(note.content, searchItem)}</p>
-            <p class="time-display">${formatRelativeTime(note.createdAt)}</p>
-          </div>
-          <div class="edit-manager">
-            <button data-index=${notesArray.indexOf(note)} class="delete-btn">Delete</button>
-            <button data-index=${notesArray.indexOf(note)} class="edit-btn">Edit</button>
-          </div>
-      `;
+      notesDiv.innerHTML = createNoteHTML(note);
     } else {
-      notesDiv.innerHTML = `
-      <form class="edit-form">
-        <label for="title">Title:</label>
-        <input type="text" class="edit-title" value="${note.title}" />
-        <label for="content">Content:</label>
-        <textarea class="edit-content">${note.content}</textarea>
-        <div class="edit-buttons">
-         <button data-index=${notesArray.indexOf(note)} type="submit">Save</button>
-         <button data-index=${notesArray.indexOf(note)} type="button" class="cancel-btn">Cancel</button>
-        </div>
-      </form>
-      `;
+      notesDiv.innerHTML = createEditHTML(note);
 
       const editForm = notesDiv.querySelector(".edit-form");
       const editedTitle = editForm.querySelector(".edit-title");
@@ -203,14 +230,7 @@ function renderNotes() {
       editForm.addEventListener("submit", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const validatedEditData = validateEditInput(editedTitle, editedContent);
-        if (!validatedEditData) return;
-
-        note.title = validatedEditData.title;
-        note.content = validatedEditData.content;
-        note.isEditing = false;
-        saveToNotes();
-        renderNotes();
+        handleEditLogic(note.id, editedTitle, editedContent);
       });
     }
     notesList.appendChild(notesDiv);
