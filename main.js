@@ -191,22 +191,26 @@ function handleEditLogic(id, inputTitle, inputContent) {
   renderNotes();
 }
 
+function getFilteredNotes() {
+  const lowercaseTitle = item.title.toLowerCase();
+  const lowercaseContent = item.content.toLowerCase();
+  const lowercaseSearchterm = searchItem.toLowerCase();
+
+  return notesArray.filter((item) => {
+    return (
+      lowercaseTitle.includes(lowercaseSearchterm) ||
+      lowercaseContent.includes(lowercaseSearchterm)
+    );
+  });
+}
+
 function renderNotes() {
   const notesList = document.getElementById("notes-list");
   const countDisplay = document.getElementById("count-display");
 
   notesList.innerHTML = "";
 
-  const filteredNotes = notesArray.filter((item) => {
-    const lowercaseTitle = item.title.toLowerCase();
-    const lowercaseContent = item.content.toLowerCase();
-    const lowercaseSearchterm = searchItem.toLowerCase();
-
-    return (
-      lowercaseTitle.includes(lowercaseSearchterm) ||
-      lowercaseContent.includes(lowercaseSearchterm)
-    );
-  });
+  const filteredNotes = getFilteredNotes();
 
   if (searchItem.length !== 0 && filteredNotes.length === 0) {
     countDisplay.innerHTML = `No match for "${searchItem}"`;
